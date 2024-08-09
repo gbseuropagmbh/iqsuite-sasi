@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  sasidaemon:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2024-08-09T14:41:20.816057189Z"
+    description: Helm Chart for iQ.Suite SASi Daemon service
+    digest: 8b3cb2c148ba4bbe10a1becc0529d5333c27392f970ccb73280141742e175c83
+    icon: https://gbs.com/wp-content/uploads/2022/04/gbs_final_logo-296x116.png
+    name: sasidaemon
+    type: application
+    urls:
+    - sasidaemon-1.0.0.tgz
+    version: 1.0.0
+generated: "2024-08-09T14:41:20.816066076Z"
