@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "application.name" . }}
+  labels:
+    name: {{ template "application.name" . }}
+    chart: {{ template "application.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    name: {{ template "application.name" . }}
+  type: {{ .Values.service.type }}
+  ports:
+  {{- range $item:= .Values.service.ports }}
+   - port: {{ $item.servicePort }}
+     name: {{ $item.name }}
+     targetPort: {{ $item.containerPort }}
+     protocol: {{ $item.protocol }}
+  {{- end }}
+     {{- if eq .Values.service.type "NodePort" }}
+     {{- range $item:= .Values.service.ports }}
+     nodePort: {{ $item.externalPort }}
+     {{- end }}
+     {{- end }}

@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "application.name" . }}
+  labels:
+    name: {{ template "application.name" . }}
+    chart: {{ template "application.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  tk_sasidaemon_starter.conf: {{ toYaml .Values.tk_sasidaemon_starter| indent 10 }}

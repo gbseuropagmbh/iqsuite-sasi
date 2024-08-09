@@ -1,0 +1,259 @@
+replicaCount: 1
+
+updateStrategy:
+  type: "RollingUpdate"
+  rollingUpdate:  # with this setup: first stop a Pod before starting up a new one
+      maxSurge: 0 # specifies the maximum number of Pods that can be created over the desired number of Pods
+      maxUnavailable: 1
+
+readinessProbe:
+  tcpSocket:
+    port: 25317
+  failureThreshold: 3
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 5
+
+livenessProbe:
+  tcpSocket:
+    port: 25317
+  failureThreshold: 3
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 5
+
+volumeMounts:
+ - path: /opt/sasidaemon/datadir
+
+volumes:
+- name: config
+
+
+image:
+  registry: gbseuropagmbh
+  repo: iqsuite-sasi
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+namespace: iqsuite-sasi
+
+
+service:
+  type: ClusterIP
+  ports:
+    - name: starter-port
+      containerPort: 25317
+      servicePort: 31230
+      externalPort: 31230
+
+    - name: daemon-port
+      containerPort: 25315
+      servicePort: 31240
+      externalPort: 31240
+
+annotations: {}
+# Enabling this will publicly expose your iQ.Suite SASi Daemon instance.
+# Only enable this if you have security enabled on your cluster
+
+ingress:
+  enabled: "true"
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  className: "nginx"
+  pathtype: ImplementationSpecific
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+httpPort: "31230"
+
+tk_sasidaemon_starter: |
+      #################################################
+      #                                               #
+      #     GBS SASI Daemon Starter Configuration     #
+      #                                               #
+      #################################################
+
+
+      # Definition of common parameters used by more than one component
+      [COMMON]
+
+      # IP address of the container, 0.0.0.0 corresponds to localhost and is default.
+      #daemon_ip4                          = 0.0.0.0
+
+      #Port for the SASI daemon. Default: 25315
+      #daemon_port                         = 25315
+
+      # Port for the SASI daemon health check. Default: 25316
+      #daemon_health_port                  = 25316
+
+      # Port for the SASI daemon starter program. Default: 25317
+      #daemon_starter_port                 = 25317
+
+      # URL from which updates are obtained.
+      #update_url                          = https://updater.gbs.com/sasid
+
+      # Username for the update server to obtain updates.
+      #update_user                         = XXXXXXXX
+
+      # Password for the update server to obtain updates.
+      #update_password                     = XXXXXXXX
+
+      # Timeout for update in seconds. Value range: 400 to 1800. Default: 480
+      #update_timeout                      = 480
+
+      # If true, check the certificate of the update server.
+      #update_check_certificate            = true
+
+      # Proxy host IP4 address for updates
+      #proxy_host                          = XXX.XXX.XXX.XXX
+
+      # Proxy port for updates
+      #proxy_port                          = XXXX
+
+      # Proxy user name
+      #proxy_user                          = XXXXXXX
+
+      # Proxy password for user
+      #proxy_password                      = XXXXXXX
+
+
+
+      # Definition of parameters used by the SASI daemon starter program
+      [MANAGEMENT]
+
+      # Log level for log messages from the SASI daemon starter program.
+      # Possible values: DETAILED, DEBUG, INFO, WARNING, ERROR. Default value: INFO
+      logging_priority                   = DETAILED
+
+
+
+      # Definition of session parameters used by the SASI daemon
+      [SESSION]
+
+      # If true, only run tests that don't require an internet connection.
+      # Possible values: true, false. Default: false
+      #core_local_tests_only               = false
+
+      # Definiton of the local domains. Default: none.
+      # The parameter may occur more than once.
+      #core_user_domains                   = gbs.com
+      #core_user_domains                   = digitall.com
+
+      # Definition of the internal hosts. Default: none.
+      # The following addresses are always included in the list:
+      # 10.0.0.0/8, 127.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+      # The parameter may occur more than once.
+      #net_internal_hosts                  = 123.123.0.0/16
+      #net_internal_hosts                  = 123.123.123.123
+
+      # Definition of the trusted relays. Default: none.
+      # The parameter may occur more than once.
+      #net_trusted_relays                  = 123.123.0.0/16
+      #net_trusted_relays                  = 123.123.123.123
+
+      # Definition of the DNS servers. Default: DNS servers from /etc/resolv.conf
+      # The parameter may occur more than once.
+      #net_dns_servers                     = 123.123.123.123
+      #net_dns_servers                     = 124.124.124.124
+
+      # Timeout for DNS lookup in seconds. Values 1 to 60. Default: 2
+      #net_dns_timeout                     = 2
+
+      # Maximum number of retries for DNS lookup. Values 1 to 10. Default: 1
+      #net_dns_retry                       = 1
+
+      # If true, do not run DNS tests.
+      # Possible values: true, false. Default: false
+      #net_skip_dns_checks                 = false
+
+      # If true, skip DNSBL tests for all IP addresses except the first untrusted
+      # relay. Possible values: true, false. Default: false
+      #dnsbl_relay_tests_only              = false
+
+      # If true, deactivate the DNSBL plug-in.
+      # Possible values: true, false. Default: false
+      #dnsbl_skip_rbl_checks               = false
+
+      # If true, activate the Sophos extensible list (SXL).
+      # Possible values: true, false. Default: true
+      #sxl_enable                          = true
+
+      # If true, do not DNS request the URIs from e-mails, instead hash the URIs.
+      # Possible values: true, false. Default: false
+      #sxl_hashed_uris                     = false
+
+      # If true, deactivate the SPF plug-in.
+      # Possible values: true, false. Default: false
+      #spf_skip_spf_checks                 = false
+
+      # Definition of the Spam assassin country codes considered as okay for e-mail.
+      # Possible values: ja, ko, ru, ka, tg, be, uk, bg, th, zh. Default: all listed.
+      # The following character sets are always allowed:
+      # all ISO-8859-*, us-ascii*, ISO-10646*, UTF*, WINDOWS125*, IBM852*
+      # The parameter may occur more than once.
+      #spam_assassin_ok_locales = ja
+      #spam_assassin_ok_locales = ko
+      #spam_assassin_ok_locales = ru
+      #spam_assassin_ok_locales = ka
+      #spam_assassin_ok_locales = tg
+      #spam_assassin_ok_locales = be
+      #spam_assassin_ok_locales = uk
+      #spam_assassin_ok_locales = bg
+      #spam_assassin_ok_locales = th
+      #spam_assassin_ok_locales = zh
+
+
+
+      # Definition of configuration parameters used by the SASI daemon
+      [CONFIG]
+
+      # Path and name of the SASI daemon log file
+      log_file                            = /opt/sasidaemon/datadir/lased.log
+
+      # Log level for log messages from the SASI daemon starter program.
+      # Possible values: DDEBUG, DEBUG, INFO, IMP, ERROR, FATAL. Default value: ERROR
+      debug_level                         = DDEBUG
+
+      # If true, logging is done on the console, otherwise the log file is used.
+      # Possible values: true, false. Default: false
+      console_output                      = false
+
+      # Maximum size of the log file in bytes.
+      # Oldest messages are overwritten if necessary.
+      # Value range: 1048576 (1Mib) to 536870912 (512MiB). Default: 33554432 (32MiB)
+      log_size                            = 33554432
+
+      # If true, PDF attachments will be processed too.
+      # Possible values: true, false. Default: true
+      #scan_pdf                            = true
+
+      # Timeout for inactive connections to the SASI daemon in seconds.
+      # Value range: 5 to 120. Default: 30
+      #client_timeout                      = 30
+
+      # Maximum number of connections to the SASI daemon.
+      # Value range: 1 to 512. Default: 12
+      #max_connections                     = 12
+
+      # Maximum number of threads for the SASI daemon.
+      # Value range: 1 to 512. Default: 4
+      #max_thread                          = 4
+
+      # Maximum number of bytes for raw MIME data.
+      # Value range: 65536 (64 KiB) to 1073741824 (1 GiB). D
