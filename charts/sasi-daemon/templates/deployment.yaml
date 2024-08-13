@@ -2,17 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "application.name" . }}
-  namespace: {{ .Values.namespace }}
+  labels:
+    name: {{ template "application.name" . }}
+    chart: {{ template "application.chart" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 2
   strategy:
-{{ toYaml .Values.updateStrategy | indent 4 }}
+{{- toYaml .Values.updateStrategy | nindent 10 }}
   selector:
     matchLabels:
       app: {{ template "application.name" . }}
   template:
     metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
       labels:
         name: {{ template "application.name" . }}
         app: {{ template "application.name" . }}
@@ -42,8 +47,17 @@ spec:
 {{ toYaml .Values.livenessProbe| indent 10 }}
         volumeMounts:
         - name: {{ (index .Values.volumes 0).name }}
-          mountPath: {{ (index .Values.volumeMounts 0).path }}
+          mountPath: /opt/sasidaemon/datadir
+
+        - name: {{ (index .Values.volumes 1).name }}
+          mountPath: /opt/sasidaemon/datadir/tk_sasidaemon_starter.conf
+          subPath: tk_sasidaemon_starter.conf
+
       volumes:
       - name: {{ (index .Values.volumes 0).name }}
+      - name: {{ (index .Values.volumes 1).name }}
         configMap:
           name: {{ template "application.name" . }}
+          items:
+          - key: tk_sasidaemon_starter.conf
+            path: tk_sasidaemon_starter.conf

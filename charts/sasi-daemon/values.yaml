@@ -1,11 +1,5 @@
 replicaCount: 1
 
-updateStrategy:
-  type: "RollingUpdate"
-  rollingUpdate:  # with this setup: first stop a Pod before starting up a new one
-      maxSurge: 0 # specifies the maximum number of Pods that can be created over the desired number of Pods
-      maxUnavailable: 1
-
 readinessProbe:
   tcpSocket:
     port: 25317
@@ -24,10 +18,13 @@ livenessProbe:
   successThreshold: 1
   timeoutSeconds: 5
 
-volumeMounts:
- - path: /opt/sasidaemon/datadir
-
+updateStrategy:
+  type: "RollingUpdate"
+  rollingUpdate:  # with this setup: first stop a Pod before starting up a new one
+      maxSurge: 0 # specifies the maximum number of Pods that can be created over the desired number of Pods
+      maxUnavailable: 1
 volumes:
+- name: datadir
 - name: config
 
 
@@ -81,6 +78,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 httpPort: "31230"
+daemonPort: "31240"
 
 tk_sasidaemon_starter: |
       #################################################
@@ -121,16 +119,16 @@ tk_sasidaemon_starter: |
       #update_check_certificate            = true
 
       # Proxy host IP4 address for updates
-      #proxy_host                          = XXX.XXX.XXX.XXX
+      #proxy_host                          = XX.XX.XX.XX
 
       # Proxy port for updates
-      #proxy_port                          = XXXX
+      #proxy_port                          = XX
 
       # Proxy user name
-      #proxy_user                          = XXXXXXX
+      #proxy_user                          = XX
 
       # Proxy password for user
-      #proxy_password                      = XXXXXXX
+      #proxy_password                      = XX
 
 
 
