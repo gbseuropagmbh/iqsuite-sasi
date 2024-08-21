@@ -230,7 +230,7 @@ tk_sasidaemon_starter: |
 
       # If true, logging is done on the console, otherwise the log file is used.
       # Possible values: true, false. Default: false
-      console_output                      = false
+      console_output                      = true
 
       # Maximum size of the log file in bytes.
       # Oldest messages are overwritten if necessary.
