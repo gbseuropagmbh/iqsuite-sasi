@@ -80,6 +80,24 @@ ingress:
 httpPort: "31230"
 daemonPort: "31240"
 
+networkPolicy:
+  enabled: false
+  # spec:
+    # policyTypes:
+    # - Ingress
+    # - Egress
+    # ingress:
+    # - from:
+      # - podSelector:
+          # matchLabels:
+            # app: example
+    # egress:
+    # - to:
+      # - podSelector:
+          # matchLabels:
+            # app: example
+
+
 tk_sasidaemon_starter: |
       #################################################
       #                                               #
