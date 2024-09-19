@@ -56,7 +56,12 @@ You can then run ```helm search repo iqsuite-sasi``` to see the charts.
  To install the chart with the release name my-release:
  
   ```helm install my-release iqsuite-sasi/sasidaemon ```
-  
+
+# Network policy
+The network policy is disabled by default. If you want to enable the network policy, install or update the deployment with ``` --set networkPolicy.enabled=true ```
+
+``` helm install my-release iqsuite-sasi/sasidaemon --version 1.0.1 -n iqsuite-sasi --create-namespace --set networkPolicy.enabled=true ```
+
 # Uninstalling the Chart  
 To uninstall/delete the my-release deployment:
 
