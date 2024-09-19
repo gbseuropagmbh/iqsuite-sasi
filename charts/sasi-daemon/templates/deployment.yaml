@@ -38,8 +38,8 @@ spec:
         env:
           - name: SERVICE_PORT
             value: "{{ (index .Values.service.ports 0).containerPort }}"
-            
-            - name: DAEMON_PORT
+
+          - name: DAEMON_PORT
             value: "{{ (index .Values.service.ports 1).containerPort }}"
         args:
           - "/opt/tk_sasidaemon_starter/tk_sasidaemon_starter"
